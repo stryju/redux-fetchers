@@ -76,7 +76,7 @@ module.exports = {
     entry: applicationEntries,
 
     output: {
-        path: path.join(__dirname, 'example-dist'),
+        path: path.join(__dirname, 'docs'),
         filename: '[name].[hash].js',
         publicPath: '/',
         sourceMapFilename: '[name].[hash].js.map',
