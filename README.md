@@ -1,17 +1,16 @@
 # redux-fetchers
-Let components automatically dispatch actions when they need to be dispatched.
+Let components automatically fetch their needed data.
 
 In the world of redux, actions are commonly used for asyncronous data.
 Want to fetch the account data of an user? Dispatch an action.
-A common problem is the caching of the action.
+A common problem that occurs, that some actions need to be cached, like actions that trigger network requests.
 
 
-So for example, we don't want to dispatch an action, when the value is already in the store but also
+As an example, we don't want to dispatch an action, when the value is already in the store but also
 we don't want to redispatch an action when it was already dispatched.
 Current best pratices would be have a state somewhere in the store for every action that needs to check these things.
 Something like `NONE / IN_PROGRESS / DONE / FAIL`.
 This get's really tedious when having a lot of actions which need this kind of states.
-
 
 This is where fetchers are used.
 
@@ -20,6 +19,7 @@ But it's a general approach which can be used for everything.
 
 
 An example usage for fetchers is shown below. For a guarenteed working example, check the example directory.
+The example is running at https://liqidtechnology.github.io/redux-fetchers/.
 
 ```js
 import * as React from 'react';
