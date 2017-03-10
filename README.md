@@ -106,7 +106,7 @@ const WrappedUserScreen = fetches(
         props => props.userId // the result of the function will be the argument of getUser
     )
 )(connect(
-    function (state, props : {userId: string}) {
+    function (state, props) {
         return {
             title: state.title,
             user: state.users[props.userId] || {}
