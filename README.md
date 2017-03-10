@@ -19,34 +19,38 @@ The most common use case are actions that perform network requests, which you do
 But it's a general approach which can be used for everything.
 
 
-Fetchers are used like this:
+An example usage for fetchers is shown below. For a guarenteed working example, check the example directory.
 
 ```js
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { createStore } from 'redux';
+import { connect, Provider } from 'react-redux';
 import {
     wrapActionForFetching,
     fetches
-} from 'redux-fetchers';
+} from '../index';
 
 const initialState = {
-    dataFromOtherAction: {
-        a: true,
-        b: true
-    }
+    users: {
+        someid: {
+            name: 'Max',
+            lastName: 'Mustermann'
+        }
+    },
+    title: undefined
 };
 
 function reducer (state = initialState, action) {
     switch (action.type) {
-    case 'MY_ACTION':
+    case 'GET_TITLE':
         return Object.assign({}, state, {
-            dataFromAction: action.data
+            title: action.title
         });
-    case: 'MY_ACTION_2':
+    case 'GET_USER':
         return Object.assign({}, state, {
-                dataFromOtherAction: Object.assign({}, state.dataFromOtherAction, {
-                    [action.key]: true
+                users: Object.assign({}, state.users, {
+                    [action.id]: action.user
                 })
             });
     default:
@@ -56,49 +60,73 @@ function reducer (state = initialState, action) {
 
 const store = createStore(reducer);
 
-function myAction () {
+function getTitle () {
     return {
-        type: 'MY_ACTION',
-        data: 'my_data'
+        type: 'GET_TITLE',
+        title: 'Having fun with redux-fetchers'
     };
 }
 
-function myAction2 () {
+function getUser (id) {
     return {
-        type: 'MY_ACTION_2',
-        key: key
+        type: 'GET_USER',
+        id: id,
+        user: {
+            name: 'Tom',
+            lastName: 'Nick'
+        }
     };
 }
 
-const myActionFetcher = wrapActionForFetching(
-    myAction, // first argument is the action we want to wrap
-    (state) => state.dataFromAction // second is an accessor function, which checks if the data is there
+const getTitleFetcher = wrapActionForFetching(
+    getTitle, // first argument is the action we want to wrap
+    (state) => state.title // second is an accessor function, which checks if the data is there
 );
 
-const myActionFetcher2 = wrapActionForFetching(
-    myAction2, // first argument is the action we want to wrap
-    (state, props) => state.dataFromOtherAction[props.key] // the function also has access to the given props
+const getUserFetcher = wrapActionForFetching(
+    getUser,
+    // the function also has access to the given arguments
+    (state, userId) => {
+        return state.users[userId];
+    }
 );
 
-function MyComponent() {
-    return <h1>{'Hi!'}</h1>;
+function UserScreen({title, user}) {
+    return (
+        <div>
+            <h1>{title}</h1>
+            <h2>{`Hi ${user.name} ${user.lastName}!`}</h2>
+        </div>
+    );
 }
 
-const WrappedMyComponent = fetches(
-    myActionFetcher(),
-    myAction2Fetcher(
-        props => props.key // the result of the function will be the argument of myAction2
+const WrappedUserScreen = fetches(
+    getTitleFetcher(),
+    getUserFetcher(
+        props => props.userId // the result of the function will be the argument of getUser
     )
-)(MyComponent);
+)(connect(
+    function (state, props : {userId: string}) {
+        return {
+            title: state.title,
+            user: state.users[props.userId] || {}
+        }
+    }
+)(UserScreen));
 
-// WrappedMyComponent asks for data of myAction and myAction2
-// myAction will be dispatched, because state.dataFromAction is undefined
-// myAction2 won't be executed because the data for the key 'a' already exsists
+// WrappedUserScreen asks for data of getTitle and getUser
+// getTitle will be dispatched, because state.dataFromAction is undefined
+// getUser won't be executed because the data for the key 'someid' already exsists
 ReactDOM.render(
-    <WrappedMyComponent key='a' />,
+    <Provider
+        store={store}
+    >
+        <WrappedUserScreen
+            userId='someid'
+        />
+    </Provider>,
     document.getElementById('root')
 );
-
 ```
 
 Internally fetchers also uses a global cache, to check if the action was already triggered.

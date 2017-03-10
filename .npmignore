@@ -1,12 +1,7 @@
 node_modules/
 *.log
 *.tgz
-
-src/
-test/
-gulpfile.js
+index.ts
 tsconfig.json
-tslint.json
-typings.json
-typings
-dist/test
+__tests__
+example

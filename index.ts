@@ -66,7 +66,7 @@ type ReactComponent<P> = (ComponentClass<P> | StatelessComponent<P>);
  * @param fetchers - Wrapped actions that should be executed when needed
  */
 export function fetches (...fetchers: Fetcher[]) {
-    const decorator = function<T> (WrappedComponent: ReactComponent<T>) : (ReactComponent<T & ImplicitState>) {
+    const decorator = function<T> (WrappedComponent: ReactComponent<T>) : (ReactComponent<T>) {
         return connect(
             function (state) {
                 return {
@@ -83,7 +83,7 @@ export function fetches (...fetchers: Fetcher[]) {
                 fetcher(props._reduxState, props._reduxDispatch, props);
             });
             return React.createElement(WrappedComponent as ComponentClass<T>, props, null);
-        }) as ComponentClass<T & ImplicitState>;
+        }) as ComponentClass<T>;
     };
     return decorator;
 }
