@@ -2,6 +2,7 @@
 Let components automatically fetch their needed data.
 
 [![npm version](https://badge.fury.io/js/redux-fetchers.svg)](https://badge.fury.io/js/redux-fetchers)
+[![Build Status](https://travis-ci.org/LIQIDTechnology/redux-fetchers.svg?branch=master)](https://travis-ci.org/LIQIDTechnology/redux-fetchers)
 
 ```
 npm install --save redux-fetchers
