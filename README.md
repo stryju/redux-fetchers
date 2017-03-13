@@ -1,5 +1,10 @@
 # redux-fetchers
 Let components automatically fetch their needed data.
+[![npm version](https://badge.fury.io/js/redux-fetchers.svg)](https://badge.fury.io/js/redux-fetchers)
+
+```
+npm install --save redux-fetchers
+```
 
 In the world of redux, actions are commonly used for asyncronous data.
 Want to fetch the account data of an user? Dispatch an action.
@@ -30,7 +35,7 @@ import { connect, Provider } from 'react-redux';
 import {
     wrapActionForFetching,
     fetches
-} from '../index';
+} from 'redux-fetchers';
 
 /**
  * Our initial data, has an undefined title and one user with id *someid*
