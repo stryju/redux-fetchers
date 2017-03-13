@@ -1,6 +1,6 @@
 {
   "name": "redux-fetchers",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Component wrapper to automatically dispatch actions when needed",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
