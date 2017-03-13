@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {
     wrapActionForFetching,
     fetches
@@ -48,6 +49,16 @@ const mockAction4 = jest.fn().mockImplementation(() => {
         data: new Date()
     };
 });
+
+class MyComponent extends React.Component<{}, {}> {
+    render () {
+        return <h1>{'Test'}</h1>;
+    }
+}
+
+function MyStatelessComponent () {
+    return <h1>{'Test Stateless'}</h1>;
+}
 
 describe('wrapActionForFetching', () => {
     const wrappedAction = wrapActionForFetching(
@@ -109,6 +120,20 @@ describe('wrapActionForFetching', () => {
         wrappedAction4(p => p.data)(store.getState(), store.dispatch, {data: 4});
         wrappedAction4(p => p.data)(store.getState(), store.dispatch, {data: 4});
         expect(mockAction4).toHaveBeenCalledTimes(0);
+    });
+
+});
+
+describe('fetches', () => {
+
+    it('wraps a React.Component and returns a component', () => {
+        const wrappedComponent = fetches()(MyComponent);
+        expect(typeof wrappedComponent).toBe('function');
+    });
+
+    it('wraps a stateless component without a type and returns a component', () => {
+        const wrappedComponent = fetches()(MyStatelessComponent);
+        expect(typeof wrappedComponent).toBe('function');
     });
 
 });

@@ -1,6 +1,6 @@
 {
   "name": "redux-fetchers",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Component wrapper to automatically dispatch actions when needed",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -27,6 +27,13 @@
   },
   "homepage": "https://github.com/LIQIDTechnology/redux-fetchers#readme",
   "jest": {
+    "globals": {
+      "__TS_CONFIG__": {
+        "module": "commonjs",
+        "jsx": "react",
+        "noEmitHelpers": false
+      }
+    },
     "transform": {
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },

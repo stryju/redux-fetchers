@@ -9,24 +9,6 @@ const { CheckerPlugin } = require('awesome-typescript-loader')
 
 const loaders = {};
 
-loaders.tslint =  {
-    test: /\.(tsx?)$/,
-    enforce: 'pre',
-    loader: 'tslint-loader',
-    options: { /* Loader options go here */ }
-}
-
-loaders.js = {
-    test: /\.(jsx?)$/,
-    use: [{
-        loader: 'babel-loader',
-        options: {
-            retainLines: true
-        }
-    }],
-    exclude: /node_modules/
-};
-
 loaders.tsx = {
     test: /\.(tsx?)$/,
      use: [{

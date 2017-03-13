@@ -25,13 +25,7 @@ export declare type Fetcher = (state: any, dispatch: Redux.Dispatch<any>, props:
  *
  * @param fetchers - Wrapped actions that should be executed when needed
  */
-export declare function fetches(...fetchers: Fetcher[]): <T>(WrappedComponent: React.ComponentClass<T> | React.StatelessComponent<T>) => React.ComponentClass<T & {
-    _reduxState: any;
-    _reduxDispatch: any;
-}> | React.StatelessComponent<T & {
-    _reduxState: any;
-    _reduxDispatch: any;
-}>;
+export declare function fetches(...fetchers: Fetcher[]): <T>(WrappedComponent: React.ComponentClass<T> | React.StatelessComponent<T>) => React.ComponentClass<T> | React.StatelessComponent<T>;
 /**
  * Takes an action and a store accessor function and creates a fetcher:
  * A actions that will automatically 'now' when it needs to be fetched/refetched
