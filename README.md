@@ -1,15 +1,16 @@
 # redux-fetchers
 Let components automatically fetch their needed data.
+
 [![npm version](https://badge.fury.io/js/redux-fetchers.svg)](https://badge.fury.io/js/redux-fetchers)
 
 ```
 npm install --save redux-fetchers
 ```
 
+## Why does this exist?
 In the world of redux, actions are commonly used for asyncronous data.
 Want to fetch the account data of an user? Dispatch an action.
 A common problem that occurs, that some actions need to be cached, like actions that trigger network requests.
-
 
 As an example, we don't want to dispatch an action, when the value is already in the store but also
 we don't want to redispatch an action when it was already dispatched.
@@ -22,7 +23,7 @@ This is where fetchers are used.
 The most common use case are actions that perform network requests, which you don't want to reexecute.
 But it's a general approach which can be used for everything.
 
-
+## How to use
 An example usage for fetchers is shown below. This example is running at https://liqidtechnology.github.io/redux-fetchers/,
 you can find the code in the examples directory.
 The source there is in TypeScript, below the few type definitions were removed to make it valid JSX.
