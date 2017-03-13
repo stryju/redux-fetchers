@@ -78,11 +78,11 @@ export function fetches (...fetchers: Fetcher[]) {
                     _reduxDispatch: dispatch
                 };
             }
-        )(function NewWrappedComponent (props: T & ImplicitState) {
+        )(function NewWrappedComponent (props: T & ImplicitState & React.Props<T>) {
             fetchers.forEach(fetcher => {
                 fetcher(props._reduxState, props._reduxDispatch, props);
             });
-            return React.createElement(WrappedComponent as ComponentClass<T>, props, null);
+            return React.createElement(WrappedComponent as ComponentClass<T>, props, props.children);
         }) as ComponentClass<T>;
     };
     return decorator;
@@ -108,7 +108,7 @@ export function wrapActionForFetching (
             const vars = stateFns.map(fn => fn(props, state));
             const requestId = `id-${id}-${vars.join('-')}`;
             // it's dangerous to not give a state, should only be done, if the function is called once!
-            if (!state || (storeValueFn(state, ...vars) === undefined && !cache.has(requestId))) {
+            if (!state || (!storeValueFn(state, ...vars) && !cache.has(requestId))) {
                 cache.set(requestId, true);
                 return dispatch(action(...vars));
             }
