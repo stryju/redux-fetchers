@@ -15,6 +15,10 @@ function reducer (state = initialState, action) {
         return Object.assign({}, state, {
             dataFromMockAction: action.data
         });
+    case 'MOCK_ACTION_5':
+        return Object.assign({}, state, {
+            dataFromMockAction5: action.data
+        });
     default:
         return state
     }
@@ -50,6 +54,13 @@ const mockAction4 = jest.fn().mockImplementation(() => {
     };
 });
 
+const mockAction5 = jest.fn().mockImplementation(() => {
+    return {
+        type: 'MOCK_ACTION_5',
+        data: new Date()
+    };
+});
+
 class MyComponent extends React.Component<{}, {}> {
     render () {
         return <h1>{'Test'}</h1>;
@@ -79,6 +90,11 @@ describe('wrapActionForFetching', () => {
     const wrappedAction4 = wrapActionForFetching(
         mockAction4,
         state => state.dataFromMockAction4
+    )
+
+    const wrappedAction5 = wrapActionForFetching(
+        mockAction5,
+        state => state.dataFromMockAction5
     )
 
     it('wraps an action', () => {
@@ -120,6 +136,20 @@ describe('wrapActionForFetching', () => {
         wrappedAction4(p => p.data)(store.getState(), store.dispatch, {data: 4});
         wrappedAction4(p => p.data)(store.getState(), store.dispatch, {data: 4});
         expect(mockAction4).toHaveBeenCalledTimes(0);
+    });
+
+    it('it can be manually triggered when not giving a state', () => {
+        wrappedAction5(p => p.data)(null, store.dispatch, {
+            test: 5
+        });
+        expect(mockAction5).toHaveBeenCalledTimes(1);
+        // when using the store, it does not fetch again, because the action
+        // wrote into to store
+        wrappedAction5(p => p.data)(store.getState(), store.dispatch, {});
+        expect(mockAction5).toHaveBeenCalledTimes(1);
+        // manually triggering it will ALWAYS dispatch the action
+        wrappedAction5(p => p.data)(null, store.dispatch, {});
+        expect(mockAction5).toHaveBeenCalledTimes(2);
     });
 
 });

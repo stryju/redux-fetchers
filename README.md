@@ -245,6 +245,8 @@ ReactDOM.render(
 
 ```
 
+## Advanced
+
 Internally fetchers also uses a global cache, to check if the action was already triggered.
 This cache can be controlled and resettet (which normally needs to be done if a user switches accounts for example).
 
@@ -257,4 +259,14 @@ import {
 // this cache is only there to not retrigger actions that are async
 
 cache.reset();
+```
+
+Sometimes you want to manually trigger a fetcher (without warpping it inside a component). To achieve this, set the first argument to something falsy and the wrapped action will be dispatched **and** cached. That this action won't be dispatched a second time when using a *real* fetcher, because it got cached, is actually the only reason you might want to do this. Keep in mind, that this will always dispatch the action, it does not matter if it got cached or not, the only advantage of using this instead of dispatching the action itself is the cache.
+
+```js
+getUserFetcher(
+    dict => dict.userId
+)(null, dispatch, {
+    userId: 'test'
+});
 ```
