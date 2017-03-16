@@ -32,10 +32,10 @@ function reducer (state = initialState, action) {
         });
     case 'GET_USER_SUCCESS':
         return Object.assign({}, state, {
-                users: Object.assign({}, state.users, {
-                    [action.id]: action.user
-                })
-            });
+            users: Object.assign({}, state.users, {
+                [action.id]: action.user
+            })
+        });
     case 'SET_USER':
         return Object.assign({}, state, {
             currentUserId: action.id
@@ -83,7 +83,7 @@ function getUser (id) {
  * @param id - the id of the user that we want to set
  */
 function setUser (id) {
-    console.log('SET USER' + id);
+    console.log('SET USER: ' + id);
     return {
         type: 'SET_USER',
         id: id
@@ -142,15 +142,25 @@ class Application extends React.Component<{
     state: any,
     userId: string,
     setUser: (id) => any
-}, {}> {
+}, {
+    userId: string;
+}> {
     constructor (props) {
         super(props);
+        this.state = {
+            userId: props.userId || ''
+        };
         this.setUser = this.setUser.bind(this);
+        this.setUserId = this.setUserId.bind(this);
     }
     setUser (e) {
         e.preventDefault();
-        const input = document.getElementById('user-input') as HTMLInputElement;
-        this.props.setUser(input.value);
+        this.props.setUser(this.state.userId);
+    }
+    setUserId (e) {
+        this.setState({
+            userId: e.target.value
+        });
     }
     render () {
         const {
@@ -169,7 +179,7 @@ class Application extends React.Component<{
                 <hr />
                 <h3>{'Change Current User:'}</h3>
                 <button onClick={this.setUser}>{'Set User ID'}</button>
-                <input type="text" name="input" id="user-input" />
+                <input value={this.state.userId} type="text" name="input" onInput={this.setUserId} />
                 <h3>{'Store:'}</h3>
                 <code>
                     {JSON.stringify(state)}
@@ -196,7 +206,6 @@ const WrappedApplication = connect(
         };
     }
 )(Application);
-
 
 /**
  * WrappedUserScreen asks for data of getTitle and getUser

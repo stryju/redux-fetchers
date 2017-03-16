@@ -25,128 +25,40 @@ The most common use case are actions that perform network requests, which you do
 But it's a general approach which can be used for everything.
 
 ## How to use
-An example usage for fetchers is shown below. This example is running at https://liqidtechnology.github.io/redux-fetchers/,
-you can find the code in the examples directory.
-The source there is in TypeScript, below the few type definitions were removed to make it valid JSX.
+The complete example is running at https://liqidtechnology.github.io/redux-fetchers/, the source can be found in the examples folder.
+
+At first we have some actions which fill our store:
+```js
+function getTitle () {
+    ...
+}
+
+function getUser (userId) {
+    ...
+}
+```
+
+
+To make a fetcher out of an action, we use `wrapActionForFetching` and give it an accessor function.
+The state here is the state from your store, the accessor function uses it and (optional) additional arguments to check for existence.
 
 ```js
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { createStore } from 'redux';
-import { connect, Provider } from 'react-redux';
-import {
-    wrapActionForFetching,
-    fetches
-} from 'redux-fetchers';
-
-/**
- * Our initial data, has an undefined title and one user with id *someid*
- */
-const initialState = {
-    currentUserId: 'someid',
-    users: {
-        someid: {
-            name: 'Max',
-            lastName: 'Mustermann'
-        }
-    },
-    title: undefined
-};
-
-/**
- * Simple reducer, that just puts the received data into the store
- */
-function reducer (state = initialState, action) {
-    switch (action.type) {
-    case 'GET_TITLE_SUCCESS':
-        return Object.assign({}, state, {
-            title: action.title
-        });
-    case 'GET_USER_SUCCESS':
-        return Object.assign({}, state, {
-                users: Object.assign({}, state.users, {
-                    [action.id]: action.user
-                })
-            });
-    case 'SET_USER':
-        return Object.assign({}, state, {
-            currentUserId: action.id
-        });
-    default:
-        return state
-    }
-}
-
-const store = createStore(reducer);
-
-/**
- * Creates an action with a specific title
- */
-function getTitle () {
-    console.log('GET TITLE');
-    return {
-        type: 'GET_TITLE_SUCCESS',
-        title: 'Having fun with redux-fetchers'
-    };
-}
-
-/**
- * Creates an action with a random user that uses the given id
- * @param id - the id of the user that will be created
- */
-function getUser (id) {
-    console.log('GET USER: ' + id);
-    // to better illustrate what the fetchers do, we use random names
-    // so it becomes more clear when this action is executed again
-    const getRandomElement = (arr) => arr[Math.floor(Math.random() * names.length)];
-    const names = ['Tom', 'Robert', 'Alice', 'John'];
-    const lastNames = ['Nick', 'Appleseed', 'Foo', 'Müller'];
-    return {
-        type: 'GET_USER_SUCCESS',
-        id: id,
-        user: {
-            name: getRandomElement(names),
-            lastName: getRandomElement(lastNames)
-        }
-    };
-}
-
-/**
- * @param id - the id of the user that we want to set
- */
-function setUser (id) {
-    console.log('SET USER' + id);
-    return {
-        type: 'SET_USER',
-        id: id
-    };
-}
-
-/**
- * Create a fetcher for the title
- * This fetcher will always be called only once, because:
- *  * After the execution there will be an entry in the cache of redux-fetcher.
- *  * This store-accessor does not take any additional arguments despite the state
- *
- * The only way that the wrapped action would be dispatched again, is to reset the cache AND reset the store.
- */
 const getTitleFetcher = wrapActionForFetching(
-    getTitle,              // first argument is the action we want to wrap
-    (state) => state.title // second is an accessor function, which checks if the data is there
+    getTitle,
+    (state) => state.title
 );
 
-/**
- * Create a fetcher for the user
- * This fetcher will be called everytime the userId changes or when the cache and store are resetted
- */
 const getUserFetcher = wrapActionForFetching(
     getUser,
-    // the function also has access to the given arguments
     (state, userId) => {
         return state.users[userId];
     }
 );
 
+```
+
+Let's say we have a simple component that is connected to a store
+```js
 function UserScreen({title, user}) {
     return (
         <div>
@@ -156,98 +68,39 @@ function UserScreen({title, user}) {
     );
 }
 
-const WrappedUserScreen = fetches(
-    getTitleFetcher(),
-    getUserFetcher(
-        props => props.userId // the result of the function will be the argument of getUser
-    )
-)(connect(
+const ConnectedUserScreen = connect(
     function (state, props) {
         return {
             title: state.title,
             user: state.users[props.userId] || {}
         }
     }
-)(UserScreen));
-
-class Application extends React.Component {
-    constructor (props) {
-        super(props);
-        this.setUser = this.setUser.bind(this);
-    }
-    setUser (e) {
-        e.preventDefault();
-        const input = document.getElementById('user-input');
-        this.props.setUser(input.value);
-    }
-    render () {
-        const {
-            state, userId
-        } = this.props;
-        return (
-            <div>
-                <p>
-                    {`This is an example of how to use redux-fetchers,
-                      for more information visit the repository page: `}
-                    <br />
-                    <a
-                        href='https://github.com/LIQIDTechnology/redux-fetchers'
-                    >{'https://github.com/LIQIDTechnology/redux-fetchers'}</a>
-                </p>
-                <WrappedUserScreen
-                    userId={userId}
-                />
-                <hr />
-                <h3>{'Change Current User:'}</h3>
-                <button onClick={this.setUser}>{'Set User ID'}</button>
-                <input type="text" name="input" id="user-input" />
-                <h3>{'Store:'}</h3>
-                <code>
-                    {JSON.stringify(state)}
-                </code>
-                <h3>{'Fetcher Cache:'}</h3>
-                <code>
-                    {JSON.stringify(window.REDUX_FETCHER_CACHE)}
-                </code>
-            </div>
-        );
-    }
-}
-
-const WrappedApplication = connect(
-    function (state) {
-        return {
-            userId: state.currentUserId,
-            state: state
-        };
-    },
-    function (dispatch) {
-        return {
-            setUser: (user) => dispatch(setUser(user))
-        };
-    }
-)(Application);
-
-
-/**
- * WrappedUserScreen asks for data of getTitle and getUser
- * getTitle will be dispatched, because state.title is undefined
- * getUser won't be executed because the data for the key 'someid' in state.users already exsists
- */
-ReactDOM.render(
-    <Provider
-        store={store}
-    >
-        <WrappedApplication />
-    </Provider>,
-    document.getElementById('root')
-);
-
+)(UserScreen);
 ```
+
+We can now use fetchers to wrap this connected component and **automatically** dispatch the needed actions to fill the store.
+```js
+const WrappedUserScreen = fetches(
+    getTitleFetcher(),
+    getUserFetcher(
+        // this will provide the additional argument of the accessor of getUserFetcher
+        props => props.userId
+    )
+)()(UserScreen));
+```
+
+## How does it work?
+
+The fetcher (the wrapped action) will add these checks to know if it should dispatch itself:
+
+1. Using the accessor, which was provided in the creation of the fetcher, it checks the state of the store if the requested value exists. If it does not exist (is falsy) check 2.
+
+2. Nothing is in the store yet, but maybe the action was already dispatched. For this we check an internal cache that redux-fetchers uses.
+If the cache says we already dispatched the action, do nothing, else dispatch the action.
 
 ## Advanced
 
-Internally fetchers also uses a global cache, to check if the action was already triggered.
+Internally fetchers use a global cache, to check if the action was already dispatched.
 This cache can be controlled and resettet (which normally needs to be done if a user switches accounts for example).
 
 ```js
@@ -261,7 +114,7 @@ import {
 cache.reset();
 ```
 
-Sometimes you want to manually trigger a fetcher (without warpping it inside a component). To achieve this, set the first argument to something falsy and the wrapped action will be dispatched **and** cached. That this action won't be dispatched a second time when using a *real* fetcher, because it got cached, is actually the only reason you might want to do this. Keep in mind, that this will always dispatch the action, it does not matter if it got cached or not, the only advantage of using this instead of dispatching the action itself is the cache.
+Sometimes you want to manually dispatch an action inside a fetcher (without warpping it inside a component). To achieve this, set the first argument to something falsy and the wrapped action will be dispatched **and** cached. That this action won't be dispatched a second time when using a *real* fetcher, because it got cached, is actually the only reason you might want to do this. Keep in mind, that this will always dispatch the action, it does not matter if it got cached or not, the only advantage of using this instead of dispatching the action itself is the cache.
 
 ```js
 getUserFetcher(
