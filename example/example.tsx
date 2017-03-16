@@ -66,7 +66,7 @@ function getUser (id) {
     console.log('GET USER: ' + id);
     // to better illustrate what the fetchers do, we use random names
     // so it becomes more clear when this action is executed again
-    const getRandomElement = (arr) => arr[Math.floor(Math.random() * names.length)];
+    const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
     const names = ['Tom', 'Robert', 'Alice', 'John'];
     const lastNames = ['Nick', 'Appleseed', 'Foo', 'Müller'];
     return {
