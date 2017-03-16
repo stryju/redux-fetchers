@@ -50,9 +50,7 @@ const getTitleFetcher = wrapActionForFetching(
 
 const getUserFetcher = wrapActionForFetching(
     getUser,
-    (state, userId) => {
-        return state.users[userId];
-    }
+    (state, userId) => state.users[userId]
 );
 
 ```
@@ -69,7 +67,7 @@ function UserScreen({title, user}) {
 }
 
 const ConnectedUserScreen = connect(
-    function (state, props) {
+    (state, props) => {
         return {
             title: state.title,
             user: state.users[props.userId] || {}
